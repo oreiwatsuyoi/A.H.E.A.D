@@ -17,9 +17,21 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
       },
     });
 
+    if (!response.ok) {
+      return NextResponse.json({ error: `API Error: ${response.status}` }, { status: response.status });
+    }
+
     const data = await response.json();
-    return NextResponse.json(data, { status: response.status });
+    return NextResponse.json(data, { 
+      status: response.status,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      }
+    });
   } catch (error) {
+    console.error('Proxy GET error:', error);
     return NextResponse.json({ error: 'Proxy request failed' }, { status: 500 });
   }
 }
@@ -38,9 +50,32 @@ export async function POST(request: NextRequest, { params }: { params: { path: s
       body: JSON.stringify(body),
     });
 
+    if (!response.ok) {
+      return NextResponse.json({ error: `API Error: ${response.status}` }, { status: response.status });
+    }
+
     const data = await response.json();
-    return NextResponse.json(data, { status: response.status });
+    return NextResponse.json(data, { 
+      status: response.status,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      }
+    });
   } catch (error) {
+    console.error('Proxy POST error:', error);
     return NextResponse.json({ error: 'Proxy request failed' }, { status: 500 });
   }
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
 }

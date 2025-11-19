@@ -15,7 +15,7 @@ export default function ClientLayout({
     <div className="min-h-screen">
       <SimpleSidebar />
       
-      <main className="ml-72 min-h-screen">
+      <main className="md:ml-72 min-h-screen pb-20 md:pb-0">
         {children}
       </main>
 

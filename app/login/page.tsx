@@ -116,7 +116,7 @@ const LoginPage: React.FC = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="w-full pl-14 pr-6 py-4 bg-slate-800/80 backdrop-blur-sm border border-slate-600/50 rounded-2xl text-gray-100 placeholder-slate-400 focus:border-emerald-400/70 focus:bg-slate-700/80 focus:outline-none transition-all duration-300"
+                        className="w-full pl-16 pr-6 py-4 bg-slate-800/80 backdrop-blur-sm border border-slate-600/50 rounded-2xl text-gray-100 placeholder-slate-400 focus:border-emerald-400/70 focus:bg-slate-700/80 focus:outline-none transition-all duration-300"
                         placeholder="Enter your email address"
                         required
                       />
@@ -132,7 +132,7 @@ const LoginPage: React.FC = () => {
                         name="password"
                         value={formData.password}
                         onChange={handleInputChange}
-                        className="w-full pl-14 pr-14 py-4 bg-slate-800/80 backdrop-blur-sm border border-slate-600/50 rounded-2xl text-gray-100 placeholder-slate-400 focus:border-emerald-400/70 focus:bg-slate-700/80 focus:outline-none transition-all duration-300"
+                        className="w-full pl-16 pr-16 py-4 bg-slate-800/80 backdrop-blur-sm border border-slate-600/50 rounded-2xl text-gray-100 placeholder-slate-400 focus:border-emerald-400/70 focus:bg-slate-700/80 focus:outline-none transition-all duration-300"
                         placeholder="Enter your password"
                         required
                       />

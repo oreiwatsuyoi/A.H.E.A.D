@@ -33,9 +33,11 @@ const SimpleSidebar: React.FC = () => {
   };
 
   return (
-    <div className={`fixed left-0 top-0 h-full bg-gradient-to-b from-slate-900 via-blue-900 to-emerald-900 border-r border-white/10 transition-all duration-300 z-50 ${
-      isCollapsed ? 'w-16' : 'w-72'
-    }`}>
+    <>
+      {/* Desktop Sidebar */}
+      <div className={`hidden md:block fixed left-0 top-0 h-full bg-gradient-to-b from-slate-900 via-blue-900 to-emerald-900 border-r border-white/10 transition-all duration-300 z-50 ${
+        isCollapsed ? 'w-16' : 'w-72'
+      }`}>
       
       <div className="p-6 border-b border-white/10">
         <div className="flex items-center justify-between">
@@ -119,7 +121,33 @@ const SimpleSidebar: React.FC = () => {
           </button>
         </div>
       </div>
-    </div>
+      </div>
+
+      {/* Mobile Bottom Navigation */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-r from-slate-900 via-blue-900 to-emerald-900 border-t border-white/10 z-50">
+        <div className="flex justify-around items-center py-2 px-4">
+          {navigationItems.slice(0, 5).map((item) => {
+            const isActive = pathname === item.path;
+            const Icon = item.icon;
+            
+            return (
+              <button
+                key={item.path}
+                onClick={() => handleNavigation(item.path)}
+                className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-all duration-200 ${
+                  isActive
+                    ? 'text-emerald-300'
+                    : 'text-blue-200 hover:text-white'
+                }`}
+              >
+                <Icon className={`h-5 w-5 ${isActive ? 'text-emerald-400' : 'text-blue-200'}`} />
+                <span className="text-xs font-medium">{item.name}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </>
   );
 };
 
