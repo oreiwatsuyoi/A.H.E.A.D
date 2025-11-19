@@ -1,13 +1,12 @@
 import axios from 'axios';
 import { Patient, Appointment, Encounter, CreatePatientRequest, ApiResponse, PaginatedResponse } from '../types';
 
-const API_BASE_URL = 'https://hackathon-api.aheadafrica.org/v1';
+const API_BASE_URL = '/api/proxy';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': 'Bearer ND3T27IJ4D:whNhkiyAjxE0YQYvybTzfm_BvUXFzWK6VrE88nKgFVw'
   },
 });
 

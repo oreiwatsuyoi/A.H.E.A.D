@@ -15,7 +15,7 @@ export default function ClientLayout({
     <div className="min-h-screen">
       <SimpleSidebar />
       
-      <main className="ml-72 min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-emerald-900">
+      <main className="ml-72 min-h-screen">
         {children}
       </main>
 

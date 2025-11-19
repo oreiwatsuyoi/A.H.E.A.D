@@ -1,69 +1,39 @@
 import React, { useState } from 'react';
-import { AlertTriangle, CheckCircle, Pill, Search } from 'lucide-react';
-import { Patient } from '../../types';
-import { patientService, pharmacyService } from '../../services/api';
-import { useNotification } from '../../hooks/useNotification';
+import { Pill, Search, AlertTriangle, CheckCircle } from 'lucide-react';
+import { pharmacyService } from '../../services/api';
 
 const PharmacyWidget: React.FC = () => {
-  const [patientId, setPatientId] = useState<string>('');
+  const [patientId, setPatientId] = useState('');
   const [medications, setMedications] = useState<string[]>([]);
-  const [medicationInput, setMedicationInput] = useState('');
-  const [patient, setPatient] = useState<Patient | null>(null);
-  const [checkResult, setCheckResult] = useState<{ safe: boolean; warnings: string[] } | null>(null);
+  const [currentMed, setCurrentMed] = useState('');
+  const [result, setResult] = useState<{ safe: boolean; warnings: string[] } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { showNotification } = useNotification();
-
-  const loadPatient = async () => {
-    if (!patientId) return;
-    
-    setIsLoading(true);
-    try {
-      const patientData = await patientService.getPatient(parseInt(patientId));
-      setPatient(patientData);
-    } catch (error) {
-      showNotification('Patient not found', 'error');
-      setPatient(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const addMedication = () => {
-    if (medicationInput.trim() && !medications.includes(medicationInput.trim())) {
-      setMedications([...medications, medicationInput.trim()]);
-      setMedicationInput('');
+    if (currentMed.trim()) {
+      setMedications([...medications, currentMed.trim()]);
+      setCurrentMed('');
     }
-  };
-
-  const removeMedication = (medication: string) => {
-    setMedications(medications.filter(m => m !== medication));
-    setCheckResult(null);
   };
 
   const checkAllergies = async () => {
-    if (!patient || medications.length === 0) return;
-
+    if (!patientId || medications.length === 0) return;
+    
     setIsLoading(true);
     try {
-      const result = await pharmacyService.checkAllergies(patient.id, medications);
-      setCheckResult(result);
-      
-      if (result.safe) {
-        showNotification('All medications are safe for this patient', 'success');
-      } else {
-        showNotification(`${result.warnings.length} potential allergy warning(s) found`, 'warning');
-      }
+      const result = await pharmacyService.checkAllergies(parseInt(patientId), medications);
+      setResult(result);
     } catch (error) {
-      showNotification('Failed to check allergies', 'error');
+      console.error('Failed to check allergies:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="card p-6">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
       <div className="flex items-center mb-6">
-        <div className="bg-gradient-to-r from-medical-500 to-primary-600 p-3 rounded-xl mr-4">
+        <div className="bg-gradient-to-r from-purple-500 to-blue-600 p-3 rounded-xl mr-4">
           <Pill className="h-6 w-6 text-white" />
         </div>
         <div>
@@ -73,92 +43,56 @@ const PharmacyWidget: React.FC = () => {
       </div>
 
       <div className="space-y-6">
-        {/* Patient Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Patient ID
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Patient ID</label>
           <div className="flex gap-2">
             <input
               type="number"
               value={patientId}
               onChange={(e) => setPatientId(e.target.value)}
-              className="input-field flex-1"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter patient ID"
             />
             <button
-              onClick={loadPatient}
-              disabled={!patientId || isLoading}
-              className="btn-secondary px-4"
+              onClick={checkAllergies}
+              disabled={!patientId || medications.length === 0 || isLoading}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Search className="h-4 w-4" />
             </button>
           </div>
         </div>
 
-        {/* Patient Info */}
-        {patient && (
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-            <h4 className="font-semibold text-blue-900 mb-2">{patient.full_name}</h4>
-            <div className="text-sm text-blue-700 space-y-1">
-              <p>DOB: {patient.date_of_birth}</p>
-              <p>Gender: {patient.gender}</p>
-              {patient.allergies && patient.allergies.length > 0 ? (
-                <div>
-                  <p className="font-medium">Known Allergies:</p>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {patient.allergies.map((allergy, index) => (
-                      <span
-                        key={index}
-                        className="inline-block px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full"
-                      >
-                        {allergy}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <p className="text-green-700">No known allergies</p>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Medication Input */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Medications to Prescribe
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Medications to Prescribe</label>
           <div className="flex gap-2 mb-3">
             <input
-              value={medicationInput}
-              onChange={(e) => setMedicationInput(e.target.value)}
-              className="input-field flex-1"
+              type="text"
+              value={currentMed}
+              onChange={(e) => setCurrentMed(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && addMedication()}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter medication name"
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addMedication())}
             />
             <button
               type="button"
               onClick={addMedication}
-              className="btn-secondary px-4"
+              className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
             >
               Add
             </button>
           </div>
-
+          
           {medications.length > 0 && (
             <div className="space-y-2">
-              {medications.map((medication, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                >
-                  <span className="font-medium">{medication}</span>
+              {medications.map((med, index) => (
+                <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                  <span className="text-sm text-gray-700">{med}</span>
                   <button
-                    onClick={() => removeMedication(medication)}
-                    className="text-red-600 hover:text-red-800"
+                    onClick={() => setMedications(medications.filter((_, i) => i !== index))}
+                    className="text-red-500 hover:text-red-700"
                   >
-                    Remove
+                    ×
                   </button>
                 </div>
               ))}
@@ -166,52 +100,24 @@ const PharmacyWidget: React.FC = () => {
           )}
         </div>
 
-        {/* Check Button */}
-        {patient && medications.length > 0 && (
-          <button
-            onClick={checkAllergies}
-            disabled={isLoading}
-            className="w-full btn-primary"
-          >
-            {isLoading ? 'Checking...' : 'Check for Allergies'}
-          </button>
-        )}
-
-        {/* Results */}
-        {checkResult && (
-          <div className={`p-4 rounded-xl border ${
-            checkResult.safe 
-              ? 'bg-green-50 border-green-200' 
-              : 'bg-red-50 border-red-200'
-          }`}>
-            <div className="flex items-center mb-3">
-              {checkResult.safe ? (
-                <CheckCircle className="h-6 w-6 text-green-600 mr-2" />
+        {result && (
+          <div className={`p-4 rounded-lg ${result.safe ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+            <div className="flex items-center mb-2">
+              {result.safe ? (
+                <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
               ) : (
-                <AlertTriangle className="h-6 w-6 text-red-600 mr-2" />
+                <AlertTriangle className="h-5 w-5 text-red-600 mr-2" />
               )}
-              <h4 className={`font-semibold ${
-                checkResult.safe ? 'text-green-900' : 'text-red-900'
-              }`}>
-                {checkResult.safe ? 'Safe to Prescribe' : 'Allergy Warning'}
-              </h4>
+              <span className={`font-medium ${result.safe ? 'text-green-800' : 'text-red-800'}`}>
+                {result.safe ? 'Safe to Prescribe' : 'Allergy Warning'}
+              </span>
             </div>
-
-            {checkResult.warnings.length > 0 && (
-              <div className="space-y-2">
-                {checkResult.warnings.map((warning, index) => (
-                  <div key={index} className="flex items-start">
-                    <AlertTriangle className="h-4 w-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
-                    <p className="text-red-800 text-sm">{warning}</p>
-                  </div>
+            {result.warnings.length > 0 && (
+              <div className="space-y-1">
+                {result.warnings.map((warning, index) => (
+                  <p key={index} className="text-sm text-red-700">{warning}</p>
                 ))}
               </div>
-            )}
-
-            {checkResult.safe && (
-              <p className="text-green-800 text-sm">
-                All medications are safe for this patient based on known allergies.
-              </p>
             )}
           </div>
         )}

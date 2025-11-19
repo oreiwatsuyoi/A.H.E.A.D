@@ -24,7 +24,6 @@ const SimpleSidebar: React.FC = () => {
     { path: '/', name: 'Home', icon: Heart },
     { path: '/dashboard', name: 'Dashboard', icon: LayoutDashboard },
     { path: '/patients', name: 'Patients', icon: Users },
-    { path: '/signup', name: 'Sign Up', icon: UserPlus },
     { path: '/ai-chat', name: 'AI Assistant', icon: Bot },
     { path: '/pharmacy', name: 'Pharmacy', icon: Pill },
   ];
@@ -111,16 +110,12 @@ const SimpleSidebar: React.FC = () => {
             {!isCollapsed && <span className="text-sm">Settings</span>}
           </button>
           <button 
-            onClick={async () => {
-              const { signOutUser } = await import('../../lib/auth');
-              await signOutUser();
-              router.push('/login');
-            }}
-            className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-red-300 hover:bg-red-500/20 hover:text-red-200 transition-colors w-full ${
+            onClick={() => handleNavigation('/login')}
+            className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-emerald-300 hover:bg-emerald-500/20 hover:text-emerald-200 transition-colors w-full ${
             isCollapsed ? 'justify-center' : ''
           }`}>
             <LogOut className="h-4 w-4" />
-            {!isCollapsed && <span className="text-sm">Logout</span>}
+            {!isCollapsed && <span className="text-sm">Sign In</span>}
           </button>
         </div>
       </div>
