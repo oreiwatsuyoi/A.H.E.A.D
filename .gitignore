@@ -88,3 +88,13 @@ jspm_packages/
 # Temporary folders
 tmp/
 temp/
+
+# Firebase
+.firebase/
+.firebaserc
+firebase-debug.log
+firebase-debug.*.log
+
+# Firebase service account keys (if any)
+service-account-*.json
+*-service-account.json

@@ -39,9 +39,9 @@ const AppointmentBooking: React.FC = () => {
 
 
   const filteredPatients = patients.filter(patient =>
-    patient.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    patient.phone_number.includes(searchTerm) ||
-    patient.email.toLowerCase().includes(searchTerm.toLowerCase())
+    patient.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    patient.phone_number?.includes(searchTerm) ||
+    patient.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const selectPatient = (patient: Patient) => {

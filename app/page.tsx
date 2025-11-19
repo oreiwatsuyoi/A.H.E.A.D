@@ -164,6 +164,103 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* AI Appointment Booking */}
+        <section className="mb-40">
+          <div className="max-w-4xl mx-auto px-4">
+            <div className="text-center mb-16">
+              <h2 className="text-5xl font-bold text-white mb-6">AI Appointment Assistant</h2>
+              <div className="h-1 w-32 bg-gradient-to-r from-emerald-400 to-blue-400 mx-auto mb-8 rounded-full"></div>
+              <p className="text-xl text-blue-100 max-w-3xl mx-auto">Book appointments using natural language in English, Yoruba, Igbo, Hausa, or voice commands</p>
+            </div>
+
+            <div className="bg-slate-900/50 backdrop-blur-lg border border-white/10 rounded-3xl p-8">
+              <div className="space-y-6">
+                {/* Language Selection */}
+                <div className="flex flex-wrap gap-3 justify-center">
+                  {[
+                    { code: 'en', name: 'English', flag: '🇬🇧' },
+                    { code: 'yo', name: 'Yoruba', flag: '🇳🇬' },
+                    { code: 'ig', name: 'Igbo', flag: '🇳🇬' },
+                    { code: 'ha', name: 'Hausa', flag: '🇳🇬' }
+                  ].map((lang) => (
+                    <button
+                      key={lang.code}
+                      className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-white text-sm font-medium transition-colors flex items-center space-x-2"
+                    >
+                      <span>{lang.flag}</span>
+                      <span>{lang.name}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Voice/Text Input */}
+                <div className="space-y-4">
+                  <textarea
+                    className="w-full h-32 bg-slate-800/50 border border-slate-600/50 rounded-2xl p-6 text-white placeholder-slate-300 resize-none focus:outline-none focus:border-emerald-400/50 focus:ring-2 focus:ring-emerald-400/20 overflow-hidden"
+                    placeholder="Type or speak your appointment request...\n\nExamples: 'Book appointment for John Doe tomorrow at 2 PM for checkup'"
+                  />
+                  
+                  {/* Action Buttons */}
+                  <div className="flex justify-end space-x-3">
+                    <button className="p-3 bg-gradient-to-r from-red-500 to-pink-600 rounded-xl text-white hover:scale-105 transition-transform shadow-lg">
+                      <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                    <button className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-blue-600 rounded-xl text-white font-semibold hover:scale-105 transition-transform shadow-lg">
+                      Book Appointment
+                    </button>
+                  </div>
+                </div>
+
+                {/* AI Response Area */}
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 min-h-[100px]">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Bot className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-blue-200 text-sm mb-2">AI Assistant Response:</p>
+                      <p className="text-white italic">I'm ready to help you book an appointment. Please describe what you need in your preferred language...</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Features */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+                  <div className="text-center p-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-xl flex items-center justify-center mx-auto mb-3">
+                      <svg className="h-6 w-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-1l-4 4z" />
+                      </svg>
+                    </div>
+                    <h4 className="text-white font-semibold mb-2">Natural Language</h4>
+                    <p className="text-blue-200 text-sm">Speak or type naturally in any supported language</p>
+                  </div>
+                  <div className="text-center p-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-xl flex items-center justify-center mx-auto mb-3">
+                      <svg className="h-6 w-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                      </svg>
+                    </div>
+                    <h4 className="text-white font-semibold mb-2">Voice Commands</h4>
+                    <p className="text-blue-200 text-sm">Record voice messages for hands-free booking</p>
+                  </div>
+                  <div className="text-center p-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-xl flex items-center justify-center mx-auto mb-3">
+                      <svg className="h-6 w-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                      </svg>
+                    </div>
+                    <h4 className="text-white font-semibold mb-2">Smart Processing</h4>
+                    <p className="text-blue-200 text-sm">AI understands context and books automatically</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Premium Platform Access */}
         <section className="mt-48 mb-32">
           <div className="max-w-6xl mx-auto px-4">
