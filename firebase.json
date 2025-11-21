@@ -1,16 +1,35 @@
 {
   "hosting": {
-    "public": "out",
+    "public": ".",
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**"
+      "**/node_modules/**",
+      ".firebase/**",
+      "functions/**",
+      "package.json",
+      "package-lock.json",
+      "README.md",
+      ".next/**",
+      "out/**",
+      "app/**",
+      "src/**",
+      "my-webrtc-app/**",
+      "public/**",
+      "*.config.js",
+      "*.config.ts",
+      "tsconfig.json",
+      "middleware.ts",
+      "*.log"
     ],
     "rewrites": [
       {
-        "source": "**",
-        "destination": "/index.html"
+        "source": "/api/**",
+        "function": "api"
       }
     ]
+  },
+  "functions": {
+    "source": "functions"
   }
 }

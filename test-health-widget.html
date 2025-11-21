@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Health Widget</title>
+</head>
+<body>
+    <h1>Testing Health Widget</h1>
+    <div id="health-fact-widget" style="position: fixed; bottom: 20px; right: 20px; max-width: 320px; background: white; padding: 1.25rem; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 1000; display: none; opacity: 0; transition: opacity 0.5s ease;"></div>
+    
+    <script>
+        const healthFacts = [
+            "Drinking water first thing in the morning helps activate your internal organs.",
+            "Your liver can regenerate itself completely.",
+            "Walking barefoot on grass can help reduce stress."
+        ];
+        
+        let currentFactIndex = 0;
+        
+        function showHealthFact() {
+            console.log('🏥 showHealthFact called, index:', currentFactIndex);
+            const widget = document.getElementById('health-fact-widget');
+            console.log('Widget element:', widget);
+            
+            if (!widget) {
+                console.error('❌ Widget not found!');
+                return;
+            }
+            
+            widget.innerHTML = `
+                <div style="font-size: 0.75rem; color: #0ea5e9; font-weight: 600; margin-bottom: 0.5rem;">💡 Health Tip</div>
+                <div style="font-size: 0.85rem; line-height: 1.4; color: #1f2937;">${healthFacts[currentFactIndex]}</div>
+            `;
+            widget.style.display = 'block';
+            widget.style.opacity = '0';
+            
+            setTimeout(() => {
+                console.log('✅ Showing widget');
+                widget.style.opacity = '1';
+            }, 100);
+            
+            setTimeout(() => {
+                console.log('⏰ Hiding widget');
+                widget.style.opacity = '0';
+                setTimeout(() => {
+                    widget.style.display = 'none';
+                    currentFactIndex = (currentFactIndex + 1) % healthFacts.length;
+                    console.log('🔄 Next fact in 5 seconds, index will be:', currentFactIndex);
+                    setTimeout(showHealthFact, 5000);
+                }, 500);
+            }, 12000);
+        }
+        
+        console.log('🚀 Starting in 2 seconds...');
+        setTimeout(showHealthFact, 2000);
+    </script>
+</body>
+</html>
