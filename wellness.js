@@ -97,12 +97,12 @@ const exercises = {
             duration: 300,
             description: 'Quick stretches for office workers',
             steps: [
-                'Neck rolls: 10 circles each direction',
-                'Shoulder shrugs: 10 up and down',
-                'Wrist circles: 10 each direction',
-                'Seated spinal twist: 30 seconds each side',
-                'Forward fold: reach for toes, hold 30 seconds',
-                'Side stretches: reach overhead, 20 seconds each'
+                'Neck Rolls: Sit tall, drop chin to chest, slowly roll head in circles - 10 each direction',
+                'Shoulder Shrugs: Lift shoulders to ears, hold 2 seconds, release - repeat 10 times',
+                'Wrist Circles: Extend arms, rotate wrists in circles - 10 each direction',
+                'Seated Spinal Twist: Sit sideways in chair, hold backrest, twist gently - 30 seconds each side',
+                'Forward Fold: Stand, hinge at hips, reach for toes (bend knees if needed) - hold 30 seconds',
+                'Side Stretches: Stand, reach one arm overhead, lean to opposite side - 20 seconds each'
             ],
             benefits: 'Reduces muscle tension, improves posture, prevents stiffness'
         },
@@ -111,12 +111,12 @@ const exercises = {
             duration: 420,
             description: 'Wake up your body and mind',
             steps: [
-                'Cat-cow stretch: 10 rounds',
-                'Downward dog: hold 30 seconds',
-                'Standing forward bend: 30 seconds',
-                'Lunges: 30 seconds each leg',
-                'Arm circles: 20 forward, 20 backward',
-                'Gentle backbend: 20 seconds'
+                'Cat-Cow: On hands and knees, arch back (cow), then round spine (cat) - 10 slow rounds',
+                'Downward Dog: Hands and feet on floor, lift hips high forming inverted V - hold 30 seconds',
+                'Standing Forward Bend: Stand tall, hinge at hips, let arms hang toward floor - 30 seconds',
+                'Lunges: Step one foot forward, lower back knee toward floor, keep front knee over ankle - 30 seconds each leg',
+                'Arm Circles: Extend arms to sides, make large circles - 20 forward, 20 backward',
+                'Gentle Backbend: Stand, place hands on lower back, gently arch backward - 20 seconds'
             ],
             benefits: 'Increases energy, improves flexibility, boosts circulation'
         },
@@ -125,12 +125,12 @@ const exercises = {
             duration: 480,
             description: 'Gentle stretches before bed',
             steps: [
-                'Seated forward fold: 1 minute',
-                'Butterfly stretch: 1 minute',
-                'Supine twist: 1 minute each side',
-                'Legs up the wall: 2 minutes',
-                'Child\'s pose: 1 minute',
-                'Corpse pose: 2 minutes'
+                'Seated Forward Fold: Sit with legs extended, hinge at hips, reach toward toes - 1 minute',
+                'Butterfly Stretch: Sit, bring soles of feet together, let knees fall to sides, gently press knees down - 1 minute',
+                'Supine Twist: Lie on back, drop both knees to one side, extend arms in T-shape - 1 minute each side',
+                'Legs Up the Wall: Lie on back with legs extended up against wall, arms relaxed at sides - 2 minutes',
+                'Child\'s Pose: Kneel, sit back on heels, extend arms forward, rest forehead on floor - 1 minute',
+                'Corpse Pose: Lie flat on back, arms at sides palms up, close eyes, breathe deeply - 2 minutes'
             ],
             benefits: 'Promotes relaxation, improves sleep quality, releases daily tension'
         }
@@ -217,11 +217,11 @@ function initWellnessWidget() {
             transform: scale(1.1) rotate(90deg);
         }
         @media (max-width: 1024px) {
-            #wellness-widget {
-                bottom: 80px !important;
+            #wellness-btn {
+                bottom: 200px !important;
             }
             #wellness-menu {
-                bottom: 150px !important;
+                bottom: 210px !important;
             }
         }
     `;

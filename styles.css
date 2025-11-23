@@ -470,6 +470,7 @@ body::before {
 .data-table-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    width: 100%;
 }
 
 .data-table thead th {
@@ -793,6 +794,70 @@ body::before {
         width: 100%;
         justify-content: center;
     }
+    
+    /* Home page mobile optimization */
+    #home-content > div[style*="grid-template-columns: 1fr 1fr"],
+    #home-content > div[style*="grid-template-columns: repeat(4"],
+    #home-content > div[style*="grid-template-columns: repeat(3"],
+    #home-content > div[style*="grid-template-columns: 1fr 2fr"] {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+    
+    /* Horizontal scroll for tables */
+    .data-table-wrapper,
+    .data-section {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .data-table {
+        min-width: 600px;
+        font-size: 0.85rem;
+    }
+    
+    /* SOS Emergency modal mobile optimization */
+    .modal > div[style*="grid-template-columns: 1fr 450px"] {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+    
+    .modal > div[style*="grid-template-columns: 1fr 450px"] > div:first-child {
+        height: 300px !important;
+    }
+    
+    .modal > div[style*="grid-template-columns: 1fr 450px"] > div:last-child {
+        max-height: none !important;
+    }
+    
+    /* Fix white text in SOS patient details */
+    .modal div[style*="background: white"] strong,
+    .modal div[style*="background: white"] div,
+    .modal div[style*="background: white"] p {
+        color: #1f2937 !important;
+    }
+    
+    .modal div[style*="background: white"] h4 {
+        color: #374151 !important;
+    }
+    
+    /* Footer mobile optimization */
+    footer > div > div[style*="grid-template-columns: repeat(4"] {
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+    }
+    
+    footer > div > div[style*="border-top"] {
+        flex-direction: column !important;
+        text-align: center !important;
+    }
+    
+    footer > div > div[style*="border-top"] > div:last-child {
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
 }
 
 /* Scrollbar */
@@ -914,4 +979,14 @@ body::before {
         font-size: 0.6rem;
         transition: transform 0.3s;
     }
+    
+    /* Settings page mobile optimization */
+    .data-section .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .data-section form > div[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
 }
+

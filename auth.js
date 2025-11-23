@@ -5,15 +5,29 @@ let currentUser = null;
 if (typeof firebase === 'undefined') {
     console.error('Firebase not loaded');
 } else {
-    // Initialize Firebase Auth
-    firebase.auth().onAuthStateChanged((user) => {
+    // Use SOS Firebase for authentication
+    const sosAuth = firebase.app('sos-emergency').auth();
+    sosAuth.onAuthStateChanged(async (user) => {
         currentUser = user;
-        updateAuthUI();
         if (user) {
             console.log('User logged in:', user.email);
+            // Fetch role from Firebase if not in localStorage
+            if (!localStorage.getItem('user_role')) {
+                try {
+                    const snapshot = await firebase.app('sos-emergency').database().ref(`users/${user.uid}`).once('value');
+                    const userData = snapshot.val();
+                    if (userData?.role) {
+                        localStorage.setItem('user_role', userData.role);
+                        console.log('Role restored from Firebase:', userData.role);
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch user role:', error);
+                }
+            }
         } else {
             console.log('User logged out');
         }
+        updateAuthUI();
     });
 }
 
@@ -21,6 +35,13 @@ if (typeof firebase === 'undefined') {
 function updateAuthUI() {
     const authBtn = document.getElementById('auth-btn');
     const mobileAuthBtn = document.getElementById('mobile-auth-btn');
+    const userRole = localStorage.getItem('user_role');
+    
+    console.log('🔄 updateAuthUI called');
+    console.log('👤 currentUser:', currentUser?.email);
+    console.log('🎭 userRole:', userRole);
+    console.log('📍 authBtn element:', authBtn);
+    console.log('📱 mobileAuthBtn element:', mobileAuthBtn);
     
     const desktopHTML = currentUser ? `
         <div style="display: flex; flex-direction: column; gap: 0.5rem;">
@@ -70,6 +91,21 @@ window.showAuthModal = function(type) {
                     <button class="close-btn" onclick="closeModal()">${closeIcon}</button>
                 </div>
                 <form onsubmit="${isLogin ? 'handleLogin' : 'handleSignup'}(event)" style="padding: 1.5rem;">
+                    <div class="form-group">
+                        <label class="form-label">I am a</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; border: 2px solid rgba(14, 165, 233, 0.3); border-radius: 8px; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='#0ea5e9'" onmouseout="if(!this.querySelector('input').checked) this.style.borderColor='rgba(14, 165, 233, 0.3)'">
+                                <input type="radio" name="role" value="doctor" required onchange="this.parentElement.parentElement.querySelectorAll('label').forEach(l => l.style.borderColor='rgba(14, 165, 233, 0.3)'); this.parentElement.style.borderColor='#0ea5e9';" style="width: 18px; height: 18px;">
+                                <i class="fas fa-user-md" style="color: #0ea5e9;"></i>
+                                <span style="color: #fff; font-weight: 500;">Doctor</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; border: 2px solid rgba(14, 165, 233, 0.3); border-radius: 8px; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='#0ea5e9'" onmouseout="if(!this.querySelector('input').checked) this.style.borderColor='rgba(14, 165, 233, 0.3)'">
+                                <input type="radio" name="role" value="patient" required onchange="this.parentElement.parentElement.querySelectorAll('label').forEach(l => l.style.borderColor='rgba(14, 165, 233, 0.3)'); this.parentElement.style.borderColor='#0ea5e9';" style="width: 18px; height: 18px;">
+                                <i class="fas fa-user" style="color: #0ea5e9;"></i>
+                                <span style="color: #fff; font-weight: 500;">Patient</span>
+                            </label>
+                        </div>
+                    </div>
                     ${!isLogin ? `
                         <div class="form-group">
                             <label class="form-label">Full Name</label>
@@ -90,6 +126,12 @@ window.showAuthModal = function(type) {
                             <input type="password" class="form-input" name="confirmPassword" required placeholder="••••••••" minlength="6">
                         </div>
                     ` : ''}
+                    <div class="form-group" style="margin-top: 1rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" id="enable-notifications" style="width: 18px; height: 18px; cursor: pointer;">
+                            <span style="color: #94a3b8; font-size: 0.875rem;">Enable push notifications for alerts and reminders</span>
+                        </label>
+                    </div>
                     <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
                         ${isLogin ? 'Login' : 'Create Account'}
                     </button>
@@ -123,18 +165,31 @@ window.handleLogin = async function(event) {
     const formData = new FormData(event.target);
     const email = formData.get('email');
     const password = formData.get('password');
+    const role = formData.get('role');
+    const enableNotifications = document.getElementById('enable-notifications')?.checked;
     
     try {
         Swal.fire({ title: 'Logging in...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-        await firebase.auth().signInWithEmailAndPassword(email, password);
+        const sosAuth = firebase.app('sos-emergency').auth();
+        await sosAuth.signInWithEmailAndPassword(email, password);
+        
+        localStorage.setItem('user_role', role);
+        
+        if (enableNotifications && typeof window.requestNotificationPermission === 'function') {
+            await window.requestNotificationPermission();
+        }
+        
         closeModal();
         Swal.fire({
             icon: 'success',
             title: 'Welcome Back!',
-            text: 'You have successfully logged in',
+            text: `Logged in as ${role}`,
             timer: 2000,
             showConfirmButton: false
         });
+        
+        navigate(role === 'doctor' ? 'dashboard' : 'home');
+        setTimeout(() => sendLoginNotification(email), 1000);
     } catch (error) {
         Swal.fire({
             icon: 'error',
@@ -152,6 +207,8 @@ window.handleSignup = async function(event) {
     const email = formData.get('email');
     const password = formData.get('password');
     const confirmPassword = formData.get('confirmPassword');
+    const role = formData.get('role');
+    const enableNotifications = document.getElementById('enable-notifications')?.checked;
     
     if (password !== confirmPassword) {
         Swal.fire({
@@ -164,16 +221,30 @@ window.handleSignup = async function(event) {
     
     try {
         Swal.fire({ title: 'Creating account...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+        const sosAuth = firebase.app('sos-emergency').auth();
+        const userCredential = await sosAuth.createUserWithEmailAndPassword(email, password);
         await userCredential.user.updateProfile({ displayName: name });
+        
+        localStorage.setItem('user_role', role);
+        await firebase.app('sos-emergency').database().ref(`users/${userCredential.user.uid}`).set({
+            name, email, role, created: Date.now()
+        });
+        
+        if (enableNotifications && typeof window.requestNotificationPermission === 'function') {
+            await window.requestNotificationPermission();
+        }
+        
         closeModal();
         Swal.fire({
             icon: 'success',
             title: 'Account Created!',
-            text: 'Welcome to MediCore',
+            text: `Welcome to MediCore as ${role}`,
             timer: 2000,
             showConfirmButton: false
         });
+        
+        navigate(role === 'doctor' ? 'dashboard' : 'home');
+        setTimeout(() => sendLoginNotification(email), 1000);
     } catch (error) {
         Swal.fire({
             icon: 'error',
@@ -186,7 +257,9 @@ window.handleSignup = async function(event) {
 // Logout
 window.logout = async function() {
     try {
-        await firebase.auth().signOut();
+        const sosAuth = firebase.app('sos-emergency').auth();
+        await sosAuth.signOut();
+        localStorage.removeItem('user_role');
         Swal.fire({
             icon: 'success',
             title: 'Logged Out',
@@ -207,16 +280,27 @@ window.logout = async function() {
 // Google Sign-In
 window.loginWithGoogle = async function() {
     try {
+        const sosAuth = firebase.app('sos-emergency').auth();
         const provider = new firebase.auth.GoogleAuthProvider();
-        await firebase.auth().signInWithPopup(provider);
+        const result = await sosAuth.signInWithPopup(provider);
+        
+        localStorage.setItem('user_role', 'patient');
+        await firebase.app('sos-emergency').database().ref(`users/${result.user.uid}`).set({
+            name: result.user.displayName,
+            email: result.user.email,
+            role: 'patient',
+            created: Date.now()
+        });
+        
         closeModal();
         Swal.fire({
             icon: 'success',
             title: 'Welcome!',
-            text: 'Successfully signed in with Google',
+            text: 'Successfully signed in with Google as patient',
             timer: 2000,
             showConfirmButton: false
         });
+        navigate('home');
     } catch (error) {
         Swal.fire({
             icon: 'error',
@@ -242,4 +326,104 @@ window.requireAuth = function() {
         return false;
     }
     return true;
+}
+
+// Send login notification with patient stats
+async function sendLoginNotification(email) {
+    console.log('🔔 ===== LOGIN NOTIFICATION START =====');
+    console.log('📧 User email:', email);
+    
+    // Check notification permission
+    console.log('🔐 Checking notification permission:', Notification.permission);
+    if (Notification.permission !== 'granted') {
+        console.log('⚠️ Notifications not enabled. Requesting permission...');
+        const permission = await Notification.requestPermission();
+        console.log('🔐 Permission result:', permission);
+        if (permission !== 'granted') {
+            console.log('❌ User denied notification permission');
+            console.log('🔔 ===== LOGIN NOTIFICATION END (NO PERMISSION) =====');
+            return;
+        }
+    }
+    
+    try {
+        console.log('📡 Fetching all patients from API...');
+        const patients = await apiCall('/patients');
+        console.log('✅ Patients fetched. Total count:', patients.results?.length || 0);
+        
+        console.log('🔍 Searching for patient with email:', email);
+        const patient = patients.results?.find(p => p.email === email);
+        
+        if (!patient) {
+            console.log('❌ No patient record found for email:', email);
+            console.log('📋 Available patient emails:', patients.results?.map(p => p.email).filter(e => e).join(', ') || 'None');
+            console.log('🔔 ===== LOGIN NOTIFICATION END (NO MATCH) =====');
+            return;
+        }
+        
+        console.log('✅ Patient found!');
+        console.log('👤 Patient ID:', patient.id);
+        console.log('👤 Patient Name:', patient.first_name, patient.last_name);
+        console.log('📧 Patient Email:', patient.email);
+        
+        console.log('📡 Fetching appointments and encounters for patient ID:', patient.id);
+        const [appointments, encounters] = await Promise.all([
+            apiCall(`/patients/${patient.id}/appointments`).catch(err => {
+                console.error('⚠️ Failed to fetch appointments:', err.message);
+                return { results: [] };
+            }),
+            apiCall(`/patients/${patient.id}/encounters`).catch(err => {
+                console.error('⚠️ Failed to fetch encounters:', err.message);
+                return { results: [] };
+            })
+        ]);
+        
+        const appointmentCount = appointments.results?.length || 0;
+        const encounterCount = encounters.results?.length || 0;
+        
+        console.log('📊 Appointment count:', appointmentCount);
+        console.log('📊 Encounter count:', encounterCount);
+        
+        const notificationBody = `You have ${appointmentCount} appointment${appointmentCount !== 1 ? 's' : ''} and ${encounterCount} encounter${encounterCount !== 1 ? 's' : ''}`;
+        console.log('📝 Notification message:', notificationBody);
+        
+        // Send push notification
+        if (Notification.permission === 'granted' && typeof window.sendPushNotification === 'function') {
+            console.log('🔔 Sending push notification...');
+            await window.sendPushNotification({
+                title: `Welcome back, ${patient.first_name}!`,
+                body: notificationBody,
+                icon: 'logo.jpeg',
+                tag: 'login-notification'
+            });
+            console.log('✅ Push notification sent successfully!');
+        }
+        
+        // Always show toast notification
+        console.log('📢 Showing toast notification...');
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: `Welcome back, ${patient.first_name}!`,
+            html: `
+                <div style="font-size: 0.9rem; color: #374151;">
+                    <strong>${appointmentCount}</strong> appointment${appointmentCount !== 1 ? 's' : ''} • 
+                    <strong>${encounterCount}</strong> encounter${encounterCount !== 1 ? 's' : ''}
+                </div>
+            `,
+            showConfirmButton: false,
+            timer: 4000,
+            timerProgressBar: true
+        });
+        console.log('✅ Toast notification shown!');
+        
+        console.log('🔔 ===== LOGIN NOTIFICATION END (SUCCESS) =====');
+    } catch (error) {
+        console.error('❌ ===== LOGIN NOTIFICATION ERROR =====');
+        console.error('Error details:', error);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+        console.error('🔔 ===== LOGIN NOTIFICATION END (ERROR) =====');
+    }
 }

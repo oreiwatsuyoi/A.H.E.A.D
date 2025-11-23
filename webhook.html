@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webhook Receiver - PharmaVigilance</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f3f4f6; }
+        h1 { color: #1f2937; }
+        #events { margin-top: 20px; }
+        .event { background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 4px solid #ef4444; }
+        pre { margin: 0; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Webhook Receiver Active</h1>
+    <p>This page receives PharmaVigilance webhook events via POST requests.</p>
+    <div id="events"></div>
+    
+    <script>
+        // Handle POST requests (simulated via fetch from external source)
+        async function handleWebhookPost() {
+            try {
+                const response = await fetch(window.location.href, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        event: 'DrugInteraction',
+                        severity: 'Major',
+                        details: 'Test webhook payload',
+                        resource: 'medication',
+                        resource_id: '123'
+                    })
+                });
+            } catch (e) {
+                console.log('POST simulation:', e);
+            }
+        }
+
+        // Listen for postMessage events
+        window.addEventListener('message', (event) => {
+            if (event.data.event === 'DrugInteraction') {
+                console.log('Webhook event received:', event.data);
+                displayEvent(event.data);
+                
+                if (window.opener && !window.opener.closed) {
+                    window.opener.postMessage(event.data, '*');
+                }
+            }
+        });
+        
+        // Handle URL query parameters
+        if (window.location.search.includes('event=')) {
+            const params = new URLSearchParams(window.location.search);
+            const eventData = {
+                event: params.get('event'),
+                severity: params.get('severity'),
+                details: params.get('details'),
+                resource: params.get('resource'),
+                resource_id: params.get('resource_id'),
+                timestamp: new Date().toISOString()
+            };
+            
+            displayEvent(eventData);
+            
+            if (window.opener && !window.opener.closed) {
+                window.opener.postMessage(eventData, '*');
+            }
+        }
+
+        // Simulate receiving POST payload (for testing)
+        window.receiveWebhookPayload = function(payload) {
+            console.log('Webhook payload received:', payload);
+            displayEvent(payload);
+            
+            if (window.opener && !window.opener.closed) {
+                window.opener.postMessage(payload, '*');
+            }
+        };
+
+        function displayEvent(data) {
+            const eventsDiv = document.getElementById('events');
+            const eventHtml = `
+                <div class="event">
+                    <strong>${data.event || 'Unknown Event'}</strong> - 
+                    <span style="color: ${getSeverityColor(data.severity)}">${data.severity || 'Unknown'}</span>
+                    <br><small>${data.timestamp || new Date().toISOString()}</small>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                </div>
+            `;
+            eventsDiv.innerHTML = eventHtml + eventsDiv.innerHTML;
+        }
+
+        function getSeverityColor(severity) {
+            const colors = {
+                'Major': '#dc2626',
+                'Moderate': '#f59e0b',
+                'Minor': '#10b981',
+                'Unknown': '#6b7280'
+            };
+            return colors[severity] || '#6b7280';
+        }
+
+        // Test button to simulate webhook
+        document.body.innerHTML += `
+            <button onclick="receiveWebhookPayload({
+                event: 'DrugInteraction',
+                severity: 'Major',
+                details: 'Aspirin and Amlodipine interaction detected',
+                resource: 'medication',
+                resource_id: '456',
+                timestamp: new Date().toISOString()
+            })" style="padding: 10px 20px; background: #ef4444; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                Test Webhook Payload
+            </button>
+        `;
+    </script>
+</body>
+</html>

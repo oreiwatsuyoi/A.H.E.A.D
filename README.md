@@ -83,6 +83,18 @@ A revolutionary healthcare platform built for the A.H.E.A.D Hackathon 2025, feat
 - **Chat Panel** - Text chat during video calls
 - **End-to-End Encryption** - Secure video connections
 
+### 🆘 SOS Emergency System (NEW!)
+- **One-Click Emergency Alert** - Red SOS button widget for instant help
+- **Live Location Tracking** - Real-time GPS tracking with 3-second updates
+- **Complete Medical Data** - Automatic transmission of patient records, medications, allergies
+- **AI Emergency Prediction** - Gemini AI predicts likely emergency scenarios
+- **Interactive Maps** - Google Maps integration for rescue team navigation
+- **Doctor Dashboard** - Real-time emergency monitoring with live maps
+- **Push Notifications** - Instant alerts to all connected doctors
+- **Medical Context** - Full patient history, current medications, recent encounters
+- **Reverse Geocoding** - Human-readable addresses from GPS coordinates
+- **Emergency Resolution** - Track and resolve emergencies with status updates
+
 ### Google Fit Integration
 - **OAuth2 Authentication** - Secure Google Fit connection
 - **Steps Tracking** - Daily step count from Google Fit
@@ -223,6 +235,14 @@ Update in `app.js`:
 ```javascript
 const GOOGLE_FIT_CLIENT_ID = 'your-client-id.apps.googleusercontent.com';
 ```
+
+### Google Maps API (for SOS Emergency System)
+Update in `maps-config.js`:
+```javascript
+const GOOGLE_MAPS_API_KEY = 'your-google-maps-api-key';
+```
+
+**Setup Guide:** See `SOS-SETUP.md` for detailed instructions
 
 ## 📱 Usage Guide
 
@@ -499,9 +519,18 @@ A.H.E.A.D/
 - Chat functionality
 - Screen sharing
 
+### Emergency Response ✅
+- SOS button widget
+- Live location tracking
+- AI emergency prediction
+- Doctor dashboard
+- Interactive maps
+- Real-time alerts
+
 ### Integrations ✅
 - Google Fit
 - Google Gemini AI
+- Google Maps
 - Voice input
 - Firebase
 

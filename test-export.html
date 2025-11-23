@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Export</title>
+</head>
+<body>
+    <button onclick="testExport()">Test Export</button>
+    <div id="output"></div>
+    
+    <script>
+        async function testExport() {
+            console.log('🧪 Test export started');
+            document.getElementById('output').innerHTML = 'Testing...';
+            
+            try {
+                console.log('✅ Export function works!');
+                document.getElementById('output').innerHTML = 'Export function works! Check console for details.';
+            } catch (error) {
+                console.error('❌ Error:', error);
+                console.error('Stack:', error.stack);
+                document.getElementById('output').innerHTML = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
